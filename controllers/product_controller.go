@@ -83,3 +83,15 @@ func UpdateProducts(c *gin.Context){
 	database.DB.Save(&product)
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": product})
 }
+
+func DeleteProducts(c *gin.Context){
+	id := c.Param("id")
+	var product models.Products
+	if err := database.DB.First(&product, id).Error; err != nil{
+		c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
+		return
+	}
+	os.Remove(filepath.Join("uploads", product.Image))
+	database.DB.Delete(&product)
+	c.JSON(http.StatusOK, gin.H{"success": true , "message": "Product deleted"})
+}
