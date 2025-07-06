@@ -24,7 +24,7 @@ func AuthMiddleware()gin.HandlerFunc{
 			return
 		}
 
-		tokenString =  strings.TrimPrefix(tokenString, "Bearer")
+		tokenString =  strings.TrimPrefix(tokenString, "Bearer ")
 		claims := &jwt.RegisteredClaims{}
 
 		token, err :=  jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
