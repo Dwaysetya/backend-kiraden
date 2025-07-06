@@ -48,3 +48,9 @@ func CreateProduct(c *gin.Context){
 
 	c.JSON(http.StatusCreated, gin.H{"success": true, "data": product})
 }
+
+func GetProduct(c *gin.Context){
+	var product []models.Products
+	database.DB.Find(&product)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": product})
+}
