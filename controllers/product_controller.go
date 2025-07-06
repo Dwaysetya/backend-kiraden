@@ -5,6 +5,7 @@ import (
 	"backend/models"
 	"fmt"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -45,12 +46,40 @@ func CreateProduct(c *gin.Context){
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create product"})
 		return
 	}
-
 	c.JSON(http.StatusCreated, gin.H{"success": true, "data": product})
 }
 
 func GetProduct(c *gin.Context){
 	var product []models.Products
 	database.DB.Find(&product)
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": product})
+}
+
+func UpdateProducts(c *gin.Context){
+	id := c.Param("id")
+	var product models.Products
+	if err := database.DB.First(&product, id).Error; err != nil{
+		c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
+		return
+	}
+
+	title := c.PostForm("title")
+	description := c.PostForm("description")
+	priceStr := c.PostForm("price")
+	price, _ := strconv.ParseFloat(priceStr, 64)
+
+	if file, err := c.FormFile("image"); err == nil{
+		ext := strings.ToLower(filepath.Ext(file.Filename))
+		filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
+		path := filepath.Join("Uploads", filename)
+		if err := c.SaveUploadedFile(file, path); err == nil{
+			os.Remove(filepath.Join("uploads", product.Image)) // delete old
+			product.Image = filename
+		}
+	}
+	product.Title = title
+	product.Description = description
+	product.Price = price
+	database.DB.Save(&product)
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": product})
 }
