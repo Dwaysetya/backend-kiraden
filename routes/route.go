@@ -20,10 +20,14 @@ func SetupRouter() *gin.Engine {
 	}))
 
 	router.POST("/api/register", controllers.Register)
-
 	router.POST("/api/login", controllers.Login)
-
 	router.GET("/api/users", middlewares.AuthMiddleware(), controllers.FindUsers)
+
+	router.Static("/uplloads", "./uploads")
+	router.GET("/api/products", controllers.GetProduct)
+	router.POST("/api/products", controllers.CreateProduct)
+	router.PUT("/api/products:id", controllers.UpdateProducts)
+	router.DELETE("api/products:id", controllers.DeleteProducts)
 
 	return router
 }
