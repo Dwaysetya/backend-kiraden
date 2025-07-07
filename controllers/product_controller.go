@@ -43,6 +43,7 @@ func CreateProduct(c *gin.Context){
 	price, _ := strconv.ParseFloat(priceStr, 64)
 	product := models.Products{Title: title, Description: description, Price: price, Image: filename}
 	if err := database.DB.Create(&product).Error; err != nil{
+		fmt.Println("DB Error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create product"})
 		return
 	}
@@ -55,10 +56,11 @@ func GetProduct(c *gin.Context){
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": product})
 }
 
-func UpdateProducts(c *gin.Context){
+func UpdateProduct(c *gin.Context){
 	id := c.Param("id")
 	var product models.Products
 	if err := database.DB.First(&product, id).Error; err != nil{
+		fmt.Println("Produk tidak ditemukan:", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
 		return
 	}
@@ -84,7 +86,7 @@ func UpdateProducts(c *gin.Context){
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": product})
 }
 
-func DeleteProducts(c *gin.Context){
+func DeleteProduct(c *gin.Context){
 	id := c.Param("id")
 	var product models.Products
 	if err := database.DB.First(&product, id).Error; err != nil{

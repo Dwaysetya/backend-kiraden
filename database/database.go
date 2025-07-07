@@ -31,10 +31,11 @@ func InitDB(){
 
 	fmt.Println("Database connected succesfully")
 
-	err = DB.AutoMigrate(&models.User{})
+	err = DB.AutoMigrate(&models.User{}, (&models.Products{}))
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}
+
 
 	fmt.Println("Database migrated successfully!")
 
